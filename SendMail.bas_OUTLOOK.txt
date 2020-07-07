@@ -1,4 +1,4 @@
-' Ce module nÈcessite les rÈfÈrences suivantes (Tools|References...)
+' Ce module n√©cessite les r√©f√©rences suivantes (Tools|References...)
 '
 ' Visual Basic for Applications
 ' Microsoft Word 16.0 Object Library
@@ -7,15 +7,15 @@
 '
 ' Microsoft Outlook 16.0 Object Library
 
-Const msg4 = "Codes d'accËs au Blog"
+Const msg4 = "Codes d'acc√®s au Blog"
 Const fic1 = "Document.pdf"
-Const txt1 = "Voici vos nouveaux codes d'accËs pour le Blog.<br>"
-Const txt2 = "Pensez ‡ changer votre mot-de-passe aprËs la premiËre connexion.<br>"
+Const txt1 = "Voici vos nouveaux codes d'acc√®s pour le Blog.<br>"
+Const txt2 = "Pensez √† changer votre mot-de-passe apr√®s la premi√®re connexion.<br>"
 Const txt3 = "Amicalement."
 
 Public Sub SendMails()
 
-    ' Constantes utilisÈes pour l'application
+    ' Constantes utilis√©es pour l'application
     ' ---------------------------------------
     
     ' Remplacer par le nom des colonnes de la table Access
@@ -30,7 +30,7 @@ Public Sub SendMails()
     Let kEmailAddress = "EMail"
     
 
-    ' Ne pas modifier aprËs ce point
+    ' Ne pas modifier apr√®s ce point
     ' ------------------------------
 
     Dim oDoc As Document
@@ -44,11 +44,11 @@ Public Sub SendMails()
     If nMailIndex = 0 Then
         MsgBox _
             "Impossible de trouver le champ " & Chr(34) & kEmailAddress & Chr(34) & _
-            "dans la source de donnÈes." & Chr(13) & Chr(10) & _
-            "VÈrifier que le nom de ce champ est correct " & _
-            "et mettez ‡ jour la valeur de la variable 'kEmailAddress' " & _
-            "correspondante au dÈbut du fichier de macros.", _
-            vbCritical, "Source de donnÈes incorrecte"
+            "dans la source de donn√©es." & Chr(13) & Chr(10) & _
+            "V√©rifier que le nom de ce champ est correct " & _
+            "et mettez √© jour la valeur de la variable 'kEmailAddress' " & _
+            "correspondante au d√©but du fichier de macros.", _
+            vbCritical, "Source de donn√©es incorrecte"
             
         Exit Sub
     End If
@@ -58,11 +58,11 @@ Public Sub SendMails()
     If nFirstNameIndex = 0 Then
         MsgBox _
             "Impossible de trouver le champ " & Chr(34) & kFirstName & Chr(34) & _
-            "dans la source de donnÈes." & Chr(13) & Chr(10) & _
-            "VÈrifier que le nom de ce champ est correct " & _
-            "et mettez ‡ jour la valeur de la variable 'kFirstName' " & _
-            "correspondante au dÈbut du fichier de macros.", _
-            vbCritical, "Source de donnÈes incorrecte"
+            "dans la source de donn√©es." & Chr(13) & Chr(10) & _
+            "V√©rifier que le nom de ce champ est correct " & _
+            "et mettez √† jour la valeur de la variable 'kFirstName' " & _
+            "correspondante au d√©but du fichier de macros.", _
+            vbCritical, "Source de donn√©es incorrecte"
             
         Exit Sub
     End If
@@ -72,11 +72,11 @@ Public Sub SendMails()
     If nFirstNameIndex = 0 Then
         MsgBox _
             "Impossible de trouver le champ " & Chr(34) & kLastName & Chr(34) & _
-            "dans la source de donnÈes." & Chr(13) & Chr(10) & _
-            "VÈrifier que le nom de ce champ est correct " & _
-            "et mettez ‡ jour la valeur de la variable 'kLastName' " & _
-            "correspondante au dÈbut du fichier de macros.", _
-            vbCritical, "Source de donnÈes incorrecte"
+            "dans la source de donn√©es." & Chr(13) & Chr(10) & _
+            "V√©rifier que le nom de ce champ est correct " & _
+            "et mettez √† jour la valeur de la variable 'kLastName' " & _
+            "correspondante au d√©but du fichier de macros.", _
+            vbCritical, "Source de donn√©es incorrecte"
             
         Exit Sub
     End If
@@ -170,7 +170,7 @@ Private Sub SendMail(ByRef oDoc As Document, ByVal Recipient As String, ByVal De
     '    ""
     '
     
-    '...soit celui-l‡...
+    '...soit celui-l√†...
     oMail.BodyFormat = olFormatHTML
     oMail.Body = _
         "<p>Bonjour,<br>" & vbCrLf & _
@@ -209,4 +209,5 @@ Private Function FindFieldIndex(ByRef oMail As Word.MailMerge, ByVal sName As St
     Let FindFieldIndex = 0
 
 End Function
+
 
