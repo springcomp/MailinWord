@@ -1,0 +1,228 @@
+' Ce module nécessite les références suivantes (Tools|References...)
+'
+' Visual Basic for Applications
+' Microsoft Word 16.0 Object Library
+' Microsoft Office 16.0 Object Library
+' OLE Automation
+'
+' Microsoft Exchange Server MAPI Client and Collaboration Data Objects 1.2.1
+' https://www.microsoft.com/en-us/download/details.aspx?id=1004
+
+Options Explicit
+
+'Const msg4 = "Codes d'accès au Blog"
+'Const fic1 = "Document.pdf"
+'Const txt1 = "Voici vos nouveaux codes d'accès pour le Blog.<br>"
+'Const txt2 = "Pensez à changer votre mot-de-passe après la première connexion.<br>"
+'Const txt3 = "Amicalement."
+
+Public Sub SendMails()
+
+    ' Constantes utilisées pour l'application
+    ' ---------------------------------------
+    
+    ' Remplacer par le nom des colonnes de la table Access
+    ' dont sont issus les enregistrements
+    
+    Dim kFirstName As String
+    Dim kLastName As String
+    Dim kEmailAddress As String
+    
+    Let kFirstName = "Prenom"
+    Let kLastName = "NomFam"
+    Let kEmailAddress = "EMail"
+    
+
+    ' Ne pas modifier après ce point
+    ' ------------------------------
+
+    Dim oDoc As Document
+    Set oDoc = ActiveDocument
+    
+    Dim oMail As MailMerge
+    Set oMail = oDoc.MailMerge
+  
+    Dim nMailIndex  As Integer
+    nMailIndex = FindFieldIndex(oMail, kEmailAddress)
+    If nMailIndex = 0 Then
+        MsgBox _
+            "Impossible de trouver le champ " & Chr(34) & kEmailAddress & Chr(34) & _
+            "dans la source de données." & Chr(13) & Chr(10) & _
+            "Vérifier que le nom de ce champ est correct " & _
+            "et mettez à jour la valeur de la variable 'kEmailAddress' " & _
+            "correspondante au début du fichier de macros.", _
+            vbCritical, "Source de données incorrecte"
+            
+        Exit Sub
+    End If
+    
+    Dim nFirstNameIndex As Integer
+    nFirstNameIndex = FindFieldIndex(oMail, kFirstName)
+    If nFirstNameIndex = 0 Then
+        MsgBox _
+            "Impossible de trouver le champ " & Chr(34) & kFirstName & Chr(34) & _
+            "dans la source de données." & Chr(13) & Chr(10) & _
+            "Vérifier que le nom de ce champ est correct " & _
+            "et mettez à jour la valeur de la variable 'kFirstName' " & _
+            "correspondante au début du fichier de macros.", _
+            vbCritical, "Source de données incorrecte"
+            
+        Exit Sub
+    End If
+    
+    Dim nLastNameIndex As Integer
+    nLastNameIndex = FindFieldIndex(oMail, kLastName)
+    If nFirstNameIndex = 0 Then
+        MsgBox _
+            "Impossible de trouver le champ " & Chr(34) & kLastName & Chr(34) & _
+            "dans la source de données." & Chr(13) & Chr(10) & _
+            "Vérifier que le nom de ce champ est correct " & _
+            "et mettez à jour la valeur de la variable 'kLastName' " & _
+            "correspondante au début du fichier de macros.", _
+            vbCritical, "Source de données incorrecte"
+            
+        Exit Sub
+    End If
+    
+    oMail.DataSource.ActiveRecord = oMail.DataSource.FirstRecord
+    
+    Dim i As Integer
+    Dim j As Integer
+    j = 0
+    i = 0
+    
+    Dim nIndex As Integer
+    For nIndex = 1 To oMail.DataSource.RecordCount
+        
+        ' perform mail merge on one record
+        
+        With oMail
+            .Destination = wdSendToNewDocument
+            .SuppressBlankLines = True
+            With .DataSource
+                .FirstRecord = oMail.DataSource.ActiveRecord
+                .LastRecord = oMail.DataSource.ActiveRecord
+            End With
+            .Execute Pause:=False
+        End With
+        
+        ' send current merged document to current mail address
+        
+        Dim newDoc As Document
+        Set newDoc = Application.Documents(1)
+        
+        If Len(oMail.DataSource.DataFields(nMailIndex).Value) = 0 Then
+           PrintDocument newDoc
+           i = i + 1
+        Else
+           SendMail newDoc _
+                  , oMail.DataSource.DataFields(nMailIndex).Value _
+                  , oMail.DataSource.DataFields(nFirstNameIndex).Value & " " & _
+                    oMail.DataSource.DataFields(nLastNameIndex).Value
+           Set newDoc = Nothing
+           j = j + 1
+        End If
+        
+        ' proceed to next record
+        
+        oMail.DataSource.ActiveRecord = wdNextRecord
+    Next
+        
+
+    Set oMail = Nothing
+    Set oDoc = Nothing
+    
+    MsgBox msg1 & vbCrLf & _
+            j & msg2 & vbCrLf & _
+            i & msg3 & vbCrLf & _
+            "", vbOKOnly + vbInformation, msg4
+
+End Sub
+
+Private Sub SendMail(ByRef oDoc As Document, ByVal Recipient As String, ByVal Destinataire As String)
+    
+    Dim TempPath As String
+    TempPath = "C:\Windows\Temp\"
+    
+    Dim ShortTempPath As String
+    ShortTempPath = "C:\Windows\Temp\"
+    
+    Dim TemporaryDocumentURL As String
+    TemporaryDocumentURL = TempPath & fic1
+    
+    oDoc.SaveAs TemporaryDocumentURL, wdFormatPDF
+    oDoc.Close wdDoNotSaveChanges
+    
+    Dim oMail As CDO.Message
+    Set oMail = New CDO.Message
+    
+    oMail.From = oCC
+    oMail.To = Recipient
+    oMail.BCC = bbC
+    oMail.Subject = msg4 & " - " & Destinataire
+    oMail.AddAttachment TemporaryDocumentURL
+    
+    'soit celui-ci...
+    'oMail.TextBody = _
+    '    "le texte du message" & vbCrLf & _
+    '    "qui peut tenir" & vbCrLf & _
+    '    "sur plusieurs lignes..." & vbCrLf & _
+    '    ""
+    '
+    
+    '...soit celui-là...
+    oMail.HTMLBody = _
+        "<p>Bonjour,<br>" & vbCrLf & _
+        txt1 & vbCrLf & _
+        txt2 & vbCrLf & _
+        txt3 & vbCrLf & _
+        ""
+    
+    
+    '...ou peut-être carrément celui-là
+    'Set oDoc = Application.Documents.Open(TemporaryDocumentURL)
+    'oDoc.SaveAs TempPath & "~.html", wdFormatHTML
+    'oDoc.Close
+    'Set oDoc = Nothing
+    'oMail.CreateMHTMLBody "file://" & TempPath & "~.html", cdoSuppressNone
+    '
+
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "smtp.orange.fr"
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 25
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "vincent-labelle"
+    oMail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Dolphin!2007+"
+    
+    oMail.Configuration.Fields.Update
+    
+    oMail.Send
+    
+    Set oMail = Nothing
+
+End Sub
+
+Private Sub PrintDocument(ByRef oDoc As Word.Document)
+    oDoc.PrintOut
+    oDoc.Close wdDoNotSaveChanges
+End Sub
+
+Private Function FindFieldIndex(ByRef oMail As Word.MailMerge, ByVal sName As String) As Integer
+
+    Dim nIndex As Integer
+
+    For nIndex = 1 To oMail.DataSource.FieldNames.Count
+    
+        If oMail.DataSource.FieldNames(nIndex).Name = sName Then
+            Let FindFieldIndex = nIndex
+            Exit Function
+        End If
+        
+    Next
+    
+    Let FindFieldIndex = 0
+
+End Function
+
+
+
