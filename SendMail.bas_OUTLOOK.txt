@@ -183,7 +183,6 @@ Private Sub SendMail(ByRef oDoc As Document, ByVal Recipient As String, ByVal De
     
     Set oMail = Nothing
     
-    oApp.Quit
     Set oApp = Nothing
 
 End Sub
